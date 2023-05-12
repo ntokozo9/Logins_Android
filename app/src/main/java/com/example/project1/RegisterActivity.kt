@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button
 import android.widget.EditText;
+import android.widget.TextView
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -33,6 +34,12 @@ class RegisterActivity : AppCompatActivity() {
         etUsername=findViewById<EditText>(R.id.etRUserName)
         etPassword=findViewById<EditText>(R.id.etRPassword)
         var register =findViewById(R.id.btnRegister) as Button
+
+        this.findViewById<TextView>(R.id.tvLoginLink).setOnClickListener{
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+
 
 
         register.setOnClickListener {
