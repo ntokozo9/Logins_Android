@@ -16,30 +16,78 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
+lateinit var etUsername: EditText
+lateinit var etPassword: EditText
+private lateinit var Username: String
+private lateinit var Password: String
 class RegisterActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
 
-        setContentView(R.layout.activity_register)
-        var etUsername: EditText
-        var etPassword: EditText
-        var btnRegister: Button
+
+    private lateinit var btnRegister: Button
+    override fun onCreate(savedInstanceState: Bundle?) {
+        //setContentView(R.layout.activity_register)
 
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-        findViewById(R.id.etRUserName) as EditText
-        findViewById(R.id.etRPassword) as EditText
-        findViewById(R.id.btnRegister) as Button
+        etUsername=findViewById<EditText>(R.id.etRUserName)
+        etPassword=findViewById<EditText>(R.id.etRPassword)
+        var register =findViewById(R.id.btnRegister) as Button
 
-        var etButton = findViewById<Button>(R.id.btnRegister)
-        var Name="Ntokozo"
-        etButton.setOnClickListener{
-            Toast.makeText(this, Name + "_"+ "Has successfully registered!",Toast.LENGTH_LONG).show();
 
+        register.setOnClickListener {
+            //var Name = "Ntokozo"
+            //  Toast.makeText(this, Name + "_"+ "Has successfully registered!",Toast.LENGTH_LONG).show();
+            registerUser()
+        }
+    }
+
+    private fun registerUser() {
+//        TODO("Not yet implemented")
+        val userName: String = etUsername.getText().toString().trim()
+        val password: String = etPassword.getText().toString().trim()
+        if (userName.isEmpty()) {
+            etUsername.error = "Username is required"
+            etUsername.requestFocus()
+            return
+        } else if (password.isEmpty()) {
+            etPassword.error = "Password is required"
+            etPassword.requestFocus()
+            return
         }
 
+        val call: Call<ResponseBody> = RetrofitClient
+            .getInstance()
+            .api
+            .createUser(User(userName, password))
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>?, response: Response<ResponseBody?>) {
+                var s = ""
+                try {
+                    s = response.body()!!.string()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+                if (s == "SUCCESS") {
+                    Toast.makeText(
+                        this@RegisterActivity,
+                        "Successfully registered. Please login",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+                } else {
+                    Toast.makeText(this@RegisterActivity, "User already exists!", Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
 
-
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(this@RegisterActivity, t.message, Toast.LENGTH_LONG).show()
+            }
+        })
     }
 }
+//fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+
+
+
